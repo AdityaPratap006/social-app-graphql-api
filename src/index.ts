@@ -6,7 +6,7 @@ dotenvConfig();
 
 const app: Express = express();
 
-app.get('/rest', (req: Request, res: Response) => {
+app.get('/rest', (_req: Request, res: Response) => {
     res.json({
         data: 'you hit a rest endpoint',
     });
