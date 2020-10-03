@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import { config as dotenvConfig } from 'dotenv';
 import chalk from 'chalk';
-import { ApolloServer, gql, IResolvers } from 'apollo-server-express';
+import { ApolloServer, IResolvers } from 'apollo-server-express';
 import http from 'http';
 import { makeExecutableSchema } from 'graphql-tools';
 import { loadFilesSync } from '@graphql-tools/load-files';
@@ -19,21 +19,14 @@ app.get('/rest', (_req: Request, res: Response) => {
     });
 });
 
-// types query / mutation / subscription
 const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, "./typeDefs")));
 
-// resolvers
-const resolvers: IResolvers<any, any> = {
-    Query: {
-        totalPosts: () => 42,
-        me: () => 'John Wick',
-    }
-};
+const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, "./resolvers")));
 
 const schema: GraphQLSchema = makeExecutableSchema({
     typeDefs: typeDefs,
     resolvers: resolvers,
-})
+});
 
 // graphql server
 const apolloServer = new ApolloServer({
