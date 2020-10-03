@@ -1,7 +1,8 @@
+const totalPosts = () => 42;
 
 const postResolver = {
     Query: {
-        totalPosts: () => 42,
+        totalPosts,
     }
 };
 

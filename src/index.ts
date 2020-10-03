@@ -1,17 +1,34 @@
 import express, { Express, Request, Response } from 'express';
 import { config as dotenvConfig } from 'dotenv';
 import chalk from 'chalk';
-import { ApolloServer, IResolvers } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import http from 'http';
 import { makeExecutableSchema } from 'graphql-tools';
 import { loadFilesSync } from '@graphql-tools/load-files';
 import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
 import path from 'path'
 import { GraphQLSchema } from 'graphql';
+import mongoose from 'mongoose';
 
 dotenvConfig();
 
 const app: Express = express();
+
+// db
+const connectToDatabase = async () => {
+    try {
+        const dbURL = process.env.MONGODB_DATABASE_URL as string;
+        await mongoose.connect(dbURL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
+        });
+        console.log(chalk.greenBright(`Connected to MongoDB successfully!`));
+    } catch (error) {
+        console.log(chalk.red(`Error connecting to mongodb: ${error.message}`));
+    }
+}
 
 app.get('/rest', (_req: Request, res: Response) => {
     res.json({
@@ -41,7 +58,12 @@ apolloServer.applyMiddleware({
 const httpServer = http.createServer(app);
 
 const PORT = process.env.PORT;
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, async () => {
+
+    console.log(chalk.yellow('Connecting to DB'));
+
+    await connectToDatabase();
+
     const localURL = `http://localhost:${PORT}`;
     console.log(`Server is ready at ${chalk.blueBright(localURL)}`);
 

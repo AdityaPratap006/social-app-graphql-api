@@ -1,6 +1,8 @@
+const me = () => 'John Wick';
+
 const authResolver = {
     Query: {
-        me: () => 'John Wick',
+        me,
     }
 };
 
