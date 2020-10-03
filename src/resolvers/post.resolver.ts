@@ -1,3 +1,4 @@
+import { IResolvers, IFieldResolver } from 'graphql-tools';
 import { IPost } from '../models';
 import { posts } from '../data';
 import chalk from 'chalk';
@@ -12,15 +13,15 @@ interface newPostArgs {
 
 // -- queries --
 
-const totalPosts = () => posts.length;
+const totalPosts: IFieldResolver<any, any, any, number> = () => posts.length;
 
-const allPosts = () => {
+const allPosts: IFieldResolver<any, any, any, IPost[]> = () => {
     return posts;
 }
 
 // -- mutations --
 
-const newPost = (parent: any, args: newPostArgs) => {
+const newPost: IFieldResolver<any, any, newPostArgs, IPost> = (parent, args, context) => {
     console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     const post: IPost = {
@@ -34,7 +35,7 @@ const newPost = (parent: any, args: newPostArgs) => {
 }
 
 // resolver
-const postResolver = {
+const postResolver: IResolvers = {
     Query: {
         totalPosts,
         allPosts,
