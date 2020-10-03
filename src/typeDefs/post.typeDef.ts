@@ -7,9 +7,15 @@ const postType = gql`
         description: String!
     }
 
+    # queries
     type Query {
         totalPosts: Int!
         allPosts: [Post!]!
+    }
+
+    # mutations 
+    type Mutation {
+        newPost(title: String!, description: String!): Post!
     }
 `;
 

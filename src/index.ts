@@ -24,9 +24,9 @@ const connectToDatabase = async () => {
             useCreateIndex: true,
             useFindAndModify: false,
         });
-        console.log(chalk.greenBright(`Connected to MongoDB successfully!`));
+        console.log(chalk.greenBright(`\nConnected to MongoDB successfully!`));
     } catch (error) {
-        console.log(chalk.red(`Error connecting to mongodb: ${error.message}`));
+        console.log(chalk.red(`\nError connecting to mongodb: ${error.message}`));
     }
 }
 
@@ -60,13 +60,13 @@ const httpServer = http.createServer(app);
 const PORT = process.env.PORT;
 httpServer.listen(PORT, async () => {
 
-    console.log(chalk.yellow('Connecting to DB'));
+    console.log(chalk.yellow('\n\nConnecting to DB\n'));
 
     await connectToDatabase();
 
     const localURL = `http://localhost:${PORT}`;
-    console.log(`Server is ready at ${chalk.blueBright(localURL)}`);
+    console.log(`\nServer is ready at ${chalk.blueBright(localURL)}`);
 
     const graphqlURL = `${localURL}${apolloServer.graphqlPath}`;
-    console.log(`GraphQL Server is ready at ${chalk.magentaBright(graphqlURL)}`);
+    console.log(`GraphQL Server is ready at ${chalk.magentaBright(graphqlURL)}\n`);
 });
