@@ -3,6 +3,11 @@ import { config as dotenvConfig } from 'dotenv';
 import chalk from 'chalk';
 import { ApolloServer, gql, IResolvers } from 'apollo-server-express';
 import http from 'http';
+import { makeExecutableSchema } from 'graphql-tools';
+import { loadFilesSync } from '@graphql-tools/load-files';
+import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
+import path from 'path'
+import { GraphQLSchema } from 'graphql';
 
 dotenvConfig();
 
@@ -15,23 +20,24 @@ app.get('/rest', (_req: Request, res: Response) => {
 });
 
 // types query / mutation / subscription
-const typeDefs = gql`
-    type Query {
-        totalPosts: Int!
-    }
-`;
+const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, "./typeDefs")));
 
 // resolvers
 const resolvers: IResolvers<any, any> = {
     Query: {
         totalPosts: () => 42,
+        me: () => 'John Wick',
     }
 };
 
-// graphql server
-const apolloServer = new ApolloServer({
+const schema: GraphQLSchema = makeExecutableSchema({
     typeDefs: typeDefs,
     resolvers: resolvers,
+})
+
+// graphql server
+const apolloServer = new ApolloServer({
+    schema: schema
 });
 
 // connect apollo server to a specific HTTP famework i.e: express
