@@ -1,11 +1,13 @@
 import { IPost } from '../models';
 import { posts } from '../data';
-// import chalk from 'chalk';
-// import util from 'util';
+import chalk from 'chalk';
+import util from 'util';
 
 interface newPostArgs {
-    title: string;
-    description: string;
+    input: {
+        title: string;
+        description: string;
+    };
 }
 
 // -- queries --
@@ -19,14 +21,11 @@ const allPosts = () => {
 // -- mutations --
 
 const newPost = (parent: any, args: newPostArgs) => {
-    // console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
-
-    const { title, description } = args;
+    console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     const post: IPost = {
         id: posts.length + 1,
-        title,
-        description,
+        ...args.input,
     }
 
     posts.push(post);

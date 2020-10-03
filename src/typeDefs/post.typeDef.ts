@@ -13,9 +13,15 @@ const postType = gql`
         allPosts: [Post!]!
     }
 
+    # input type
+    input PostInput {
+        title: String!
+        description: String!
+    }
+
     # mutations 
     type Mutation {
-        newPost(title: String!, description: String!): Post!
+        newPost(input: PostInput!): Post!
     }
 `;
 
