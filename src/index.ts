@@ -36,9 +36,9 @@ app.get('/rest', (_req: Request, res: Response) => {
     });
 });
 
-const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, "./typeDefs")));
+const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, "./graphql/typeDefs")));
 
-const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, "./resolvers")));
+const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, "./graphql/resolvers")));
 
 const schema: GraphQLSchema = makeExecutableSchema({
     typeDefs: typeDefs,
@@ -50,14 +50,16 @@ const apolloServer = new ApolloServer({
     schema: schema
 });
 
-// connect apollo server to a specific HTTP famework i.e: express
+// connect apollo graphql server to a specific HTTP famework i.e: express
 apolloServer.applyMiddleware({
     app: app,
 });
 
+// create a general HTTP server
+const PORT = process.env.PORT;
+
 const httpServer = http.createServer(app);
 
-const PORT = process.env.PORT;
 httpServer.listen(PORT, async () => {
 
     console.log(chalk.yellow('\n\nConnecting to DB\n'));

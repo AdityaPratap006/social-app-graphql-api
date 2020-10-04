@@ -1,8 +1,9 @@
 import { IResolvers, IFieldResolver } from 'graphql-tools';
-import { IPost } from '../models';
-import { posts } from '../data';
 import chalk from 'chalk';
 import util from 'util';
+import { IPost } from '../../models';
+import { posts } from '../../data';
+
 
 interface newPostArgs {
     input: {
