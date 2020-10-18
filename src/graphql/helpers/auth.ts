@@ -21,22 +21,32 @@ firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(serviceAccountParams),
 });
 
-const defaultNext = () => {
-    console.log(chalk.green('You are authorized!'));
+const getUserDetails = async (uid: string) => {
+    try {
+        const currentUser = await firebaseAdmin.auth().getUser(uid);
+        return currentUser;
+    } catch (error) {
+        console.log(chalk.red('USER NOT FOUND: ', error));
+        throw Error(`User not found`);
+    }
 }
-
 
 export const authCheck = async (req: Request) => {
 
     try {
         const authToken = req.headers.authorization || '';
-        const currentUser = await firebaseAdmin.auth().verifyIdToken(authToken);
+
+        const decodedToken = await firebaseAdmin.auth().verifyIdToken(authToken);
+        const currentUser = await getUserDetails(decodedToken.uid);
 
         console.log(chalk.magenta('CURRENT USER: ', util.inspect(currentUser, { showHidden: false, depth: null })));
 
         return currentUser;
     } catch (error) {
         console.log(chalk.red('AUTH CHECK ERROR', error));
+        if (error = `User not found`) {
+            throw Error(error);
+        }
         throw Error(`Invalid or expired token`);
     }
 }
