@@ -3,7 +3,8 @@ import chalk from 'chalk';
 import util from 'util';
 import { IPost } from '../../models';
 import { posts } from '../../data';
-
+import { authCheck } from '../helpers/auth';
+import { RequestResponseObject } from '../utils/context';
 
 interface newPostArgs {
     input: {
@@ -14,16 +15,23 @@ interface newPostArgs {
 
 // -- queries --
 
-const totalPosts: IFieldResolver<any, any, any, number> = () => posts.length;
+const totalPosts: IFieldResolver<any, RequestResponseObject, any, Promise<number>> = async (parents, args, context) => {
+    await authCheck(context.req);
 
-const allPosts: IFieldResolver<any, any, any, IPost[]> = () => {
+    return posts.length
+};
+
+const allPosts: IFieldResolver<any, RequestResponseObject, any, Promise<IPost[]>> = async (parents, args, context) => {
+    await authCheck(context.req);
     return posts;
 }
 
 // -- mutations --
 
-const newPost: IFieldResolver<any, any, newPostArgs, IPost> = (parent, args, context) => {
-    console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
+const newPost: IFieldResolver<any, RequestResponseObject, newPostArgs, Promise<IPost>> = async (parent, args, context) => {
+    // console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
+
+    await authCheck(context.req);
 
     const post: IPost = {
         id: posts.length + 1,

@@ -9,6 +9,7 @@ import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
 import path from 'path'
 import { GraphQLSchema } from 'graphql';
 import mongoose from 'mongoose';
+import { contextFunction } from './graphql/utils/context';
 
 dotenvConfig();
 
@@ -45,9 +46,11 @@ const schema: GraphQLSchema = makeExecutableSchema({
     resolvers: resolvers,
 });
 
+
 // graphql server
 const apolloServer = new ApolloServer({
-    schema: schema
+    schema: schema,
+    context: contextFunction,
 });
 
 // connect apollo graphql server to a specific HTTP famework i.e: express
