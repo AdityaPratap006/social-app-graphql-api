@@ -1,26 +1,30 @@
 import { IFieldResolver, IResolvers } from 'graphql-tools';
 import shortid from 'shortid';
-import { authCheck } from '../helpers/auth';
+import { authCheck, getVerifiedUser } from '../helpers/auth';
 import { RequestResponseObject } from '../utils/context';
 import { User, UserDoc } from '../../models/user';
+import chalk from 'chalk';
+import util from 'util';
 
-interface newPostArgs {
+interface userCreateArgs {
     input: {
-        title: string;
-        description: string;
+        authToken: string;
     };
 }
 
-const me: IFieldResolver<any, RequestResponseObject, newPostArgs, Promise<string>> = async (parent, args, { req }) => {
+const me: IFieldResolver<any, RequestResponseObject, userCreateArgs, Promise<string>> = async (parent, args, { req }) => {
     await authCheck(req);
     return 'John Wick';
 };
 
-const userCreate: IFieldResolver<any, RequestResponseObject, any, Promise<UserDoc>> = async (parent, args, { req }) => {
-    const currentUser = await authCheck(req);
+const userCreate: IFieldResolver<any, RequestResponseObject, userCreateArgs, Promise<UserDoc>> = async (parent, args, { req }) => {
+    console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
+
+    const currentUser = await getVerifiedUser(args.input.authToken);
     const user = await User.findOne({ email: currentUser.email });
 
     if (user) {
+        console.log(chalk.blue('user already exists'));
         return user;
     }
 
@@ -31,6 +35,8 @@ const userCreate: IFieldResolver<any, RequestResponseObject, any, Promise<UserDo
     });
 
     await newUser.save();
+    console.log(chalk.green('created new user'));
+
     return newUser;
 };
 

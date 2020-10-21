@@ -1,7 +1,6 @@
 import firebaseAdmin, { ServiceAccount } from 'firebase-admin';
 import chalk from 'chalk';
-import util from 'util';
-import { Request, Response, NextFunction } from 'express';
+import { Request } from 'express';
 import serviceAccount from '../../config/firebaseServiceAccountKey.json';
 
 const serviceAccountParams = <ServiceAccount>{
@@ -31,15 +30,10 @@ const getUserDetails = async (uid: string) => {
     }
 }
 
-export const authCheck = async (req: Request) => {
-
+export const getVerifiedUser = async (authToken: string) => {
     try {
-        const authToken = req.headers.authorization || '';
-
         const decodedToken = await firebaseAdmin.auth().verifyIdToken(authToken);
         const currentUser = await getUserDetails(decodedToken.uid);
-
-        console.log(chalk.magenta('CURRENT USER: ', util.inspect(currentUser, { showHidden: false, depth: null })));
 
         return currentUser;
     } catch (error) {
@@ -49,4 +43,10 @@ export const authCheck = async (req: Request) => {
         }
         throw Error(`Invalid or expired token`);
     }
+}
+
+export const authCheck = async (req: Request) => {
+    const authToken = req.headers.authorization || '';
+    const currentUser = await getVerifiedUser(authToken);
+    return currentUser;
 }

@@ -29,7 +29,6 @@ const allPosts: IFieldResolver<any, RequestResponseObject, any, Promise<IPost[]>
 // -- mutations --
 
 const newPost: IFieldResolver<any, RequestResponseObject, newPostArgs, Promise<IPost>> = async (parent, args, context) => {
-    // console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     await authCheck(context.req);
 
