@@ -1,14 +1,23 @@
 import { IFieldResolver, IResolvers } from 'graphql-tools';
-import shortid from 'shortid';
-import { authCheck, getVerifiedUser } from '../helpers/auth';
-import { RequestResponseObject } from '../utils/context';
-import { User, UserDoc } from '../../models/user';
 import chalk from 'chalk';
 import util from 'util';
+import { authCheck, getVerifiedUser } from '../helpers/auth';
+import { RequestResponseObject } from '../utils/context';
+import { UserDoc } from '../../models/user';
+import UserService from '../../services/user.service';
 
 interface userCreateArgs {
     input: {
         authToken: string;
+    };
+}
+
+interface userUpdateArgs {
+    input: {
+        name: string;
+        email: string;
+        username: string;
+        about: string;
     };
 }
 
@@ -21,23 +30,31 @@ const userCreate: IFieldResolver<any, RequestResponseObject, userCreateArgs, Pro
     console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     const currentUser = await getVerifiedUser(args.input.authToken);
-    const user = await User.findOne({ email: currentUser.email });
+    const user = await UserService.getOneUserByEmail(currentUser.email as string);
 
     if (user) {
         console.log(chalk.blue('user already exists'));
         return user;
     }
 
-    const newUser = User.build({
+    const newUser = await UserService.createNewUser({
         email: currentUser.email as string,
-        username: shortid.generate(),
-        name: currentUser.displayName,
+        name: currentUser.displayName as string,
     });
 
-    await newUser.save();
-    console.log(chalk.green('created new user'));
-
     return newUser;
+};
+
+const userUpdate: IFieldResolver<any, RequestResponseObject, userUpdateArgs, Promise<UserDoc | null>> = async (parent, args, { req }) => {
+    console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
+
+    const currentUser = await authCheck(req);
+
+    const updatedUser = await UserService.getAndUpdateOneUser(currentUser.email as string, {
+        ...args.input,
+    });
+
+    return updatedUser;
 };
 
 const authResolver: IResolvers = {
@@ -46,6 +63,7 @@ const authResolver: IResolvers = {
     },
     Mutation: {
         userCreate,
+        userUpdate,
     }
 };
 

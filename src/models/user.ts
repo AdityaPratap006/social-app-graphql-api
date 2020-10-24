@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 // An interface that desribes the properties
 // that are required to create a new User
-interface UserAttributes {
+export interface UserAttributes {
     email: string;
-    username: string;
+    username?: string;
     name?: string;
     about?: string;
 }
