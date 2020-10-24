@@ -1,6 +1,8 @@
 import { gql } from 'apollo-server-express';
 
 const authType = gql`
+    scalar DateTime
+
     type Image {
         url: String
         public_id: String
@@ -13,8 +15,8 @@ const authType = gql`
         name: String
         about: String
         images: [Image]
-        createdAt: String
-        updatedAt: String
+        createdAt: DateTime
+        updatedAt: DateTime
     }
 
     input AuthTokenInput {

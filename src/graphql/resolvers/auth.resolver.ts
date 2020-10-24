@@ -1,6 +1,8 @@
 import { IFieldResolver, IResolvers } from 'graphql-tools';
 import chalk from 'chalk';
 import util from 'util';
+import { DateTimeResolver } from 'graphql-scalars';
+
 import { authCheck, getVerifiedUser } from '../helpers/auth';
 import { RequestResponseObject } from '../utils/context';
 import { UserDoc } from '../../models/user';
@@ -65,6 +67,7 @@ const userUpdate: IFieldResolver<any, RequestResponseObject, userUpdateArgs, Pro
 };
 
 const authResolver: IResolvers = {
+    DateTime: DateTimeResolver,
     Query: {
         profile,
     },
