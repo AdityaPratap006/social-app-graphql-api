@@ -21,10 +21,17 @@ interface userUpdateArgs {
     };
 }
 
-const me: IFieldResolver<any, RequestResponseObject, userCreateArgs, Promise<string>> = async (parent, args, { req }) => {
-    await authCheck(req);
-    return 'John Wick';
-};
+const profile: IFieldResolver<any, RequestResponseObject, any, Promise<UserDoc>> = async (parent, args, context) => {
+    const currentUser = await authCheck(context.req);
+
+    const user = await UserService.getOneUserByEmail(currentUser.email as string);
+
+    if (!user) {
+        throw Error('User Profile not found');
+    }
+
+    return user;
+}
 
 const userCreate: IFieldResolver<any, RequestResponseObject, userCreateArgs, Promise<UserDoc>> = async (parent, args, { req }) => {
     console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
@@ -59,7 +66,7 @@ const userUpdate: IFieldResolver<any, RequestResponseObject, userUpdateArgs, Pro
 
 const authResolver: IResolvers = {
     Query: {
-        me,
+        profile,
     },
     Mutation: {
         userCreate,

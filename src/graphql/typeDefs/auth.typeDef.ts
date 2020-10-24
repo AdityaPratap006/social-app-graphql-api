@@ -1,10 +1,6 @@
 import { gql } from 'apollo-server-express';
 
 const authType = gql`
-    type Query {
-        me: String!
-    }
-
     type Image {
         url: String
         public_id: String
@@ -46,6 +42,10 @@ const authType = gql`
     type Mutation {
         userCreate(input: AuthTokenInput!): UserCreateResponse!
         userUpdate(input: UserUpdateInput): User!
+    }
+
+    type Query {
+        profile: User!
     }
 `;
 
