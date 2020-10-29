@@ -20,6 +20,7 @@ interface userUpdateArgs {
         email: string;
         username: string;
         about: string;
+        imageBase64String: string;
     };
 }
 

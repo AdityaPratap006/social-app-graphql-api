@@ -1,6 +1,7 @@
 import shortid from 'shortid';
 import chalk from 'chalk';
 import { User } from '../models/user';
+import { cloudinary } from '../utils/cloudinary';
 
 interface NewUserInput {
     email: string;
@@ -16,7 +17,7 @@ interface UpdateUserInput {
     name?: string;
     username?: string;
     about?: string;
-    images?: ProfileImageInput[];
+    imageBase64String?: string;
 }
 
 export default class UserService {
@@ -41,10 +42,36 @@ export default class UserService {
     }
 
     static getAndUpdateOneUser = async (userEmail: string, newUserData: UpdateUserInput) => {
+
+        let profileImageData: ProfileImageInput = {
+            public_id: '',
+            url: '',
+        }
+
+        if (newUserData.imageBase64String) {
+            try {
+                const result = await cloudinary.uploader.upload(newUserData.imageBase64String, {
+                    public_id: `${Date.now()}`,
+                    upload_preset: `social_app_graphql_profile_pics`,
+                });
+
+                profileImageData = {
+                    public_id: result.public_id,
+                    url: result.url,
+                };
+
+            } catch (error) {
+                throw Error(`error uploading image`);
+            }
+        }
+
+        delete newUserData.imageBase64String;
+
         const updatedUser = await User.findOneAndUpdate({
             email: userEmail
         }, {
-            ...newUserData
+            ...newUserData,
+            images: [profileImageData],
         }, {
             new: true
         }).exec();

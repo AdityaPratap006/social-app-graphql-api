@@ -9,27 +9,14 @@ import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
 import path from 'path'
 import { GraphQLSchema } from 'graphql';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import { contextFunction } from './graphql/utils/context';
 
 dotenvConfig();
 
 const app: Express = express();
 
-// db
-const connectToDatabase = async () => {
-    try {
-        const dbURL = process.env.MONGODB_DATABASE_URL as string;
-        await mongoose.connect(dbURL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true,
-            useFindAndModify: false,
-        });
-        console.log(chalk.greenBright(`\nConnected to MongoDB successfully!`));
-    } catch (error) {
-        console.log(chalk.red(`\nError connecting to mongodb: ${error.message}`));
-    }
-}
+app.use(cors());
 
 app.get('/rest', (_req: Request, res: Response) => {
     res.json({
@@ -56,12 +43,31 @@ const apolloServer = new ApolloServer({
 // connect apollo graphql server to a specific HTTP famework i.e: express
 apolloServer.applyMiddleware({
     app: app,
+    bodyParserConfig: {
+        limit: '1mb',
+    }
 });
 
 // create a general HTTP server
 const PORT = process.env.PORT;
 
 const httpServer = http.createServer(app);
+
+// db
+const connectToDatabase = async () => {
+    try {
+        const dbURL = process.env.MONGODB_DATABASE_URL as string;
+        await mongoose.connect(dbURL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
+        });
+        console.log(chalk.greenBright(`\nConnected to MongoDB successfully!`));
+    } catch (error) {
+        console.log(chalk.red(`\nError connecting to mongodb: ${error.message}`));
+    }
+}
 
 httpServer.listen(PORT, async () => {
 

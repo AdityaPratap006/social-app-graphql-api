@@ -37,7 +37,7 @@ const authType = gql`
         username: String
         email: String
         name: String
-        images: [ImageInput]
+        imageBase64String: String
         about: String
     }
 
