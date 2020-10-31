@@ -1,6 +1,6 @@
 import { IFieldResolver, IResolvers } from 'graphql-tools';
 import chalk from 'chalk';
-import util from 'util';
+// import util from 'util';
 import { DateTimeResolver } from 'graphql-scalars';
 
 import { authCheck, getVerifiedUser } from '../helpers/auth';
@@ -37,7 +37,7 @@ const profile: IFieldResolver<any, RequestResponseObject, any, Promise<UserDoc>>
 }
 
 const userCreate: IFieldResolver<any, RequestResponseObject, userCreateArgs, Promise<UserDoc>> = async (parent, args, { req }) => {
-    console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
+    // console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     const currentUser = await getVerifiedUser(args.input.authToken);
     const user = await UserService.getOneUserByEmail(currentUser.email as string);
@@ -56,7 +56,7 @@ const userCreate: IFieldResolver<any, RequestResponseObject, userCreateArgs, Pro
 };
 
 const userUpdate: IFieldResolver<any, RequestResponseObject, userUpdateArgs, Promise<UserDoc | null>> = async (parent, args, { req }) => {
-    console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
+    // console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     const currentUser = await authCheck(req);
 
@@ -67,10 +67,17 @@ const userUpdate: IFieldResolver<any, RequestResponseObject, userUpdateArgs, Pro
     return updatedUser;
 };
 
+const allUsers: IFieldResolver<any, RequestResponseObject, any, Promise<UserDoc[]>> = async (parents, args, ctx) => {
+    const users = await UserService.getAllUsers();
+
+    return users;
+}
+
 const authResolver: IResolvers = {
     DateTime: DateTimeResolver,
     Query: {
         profile,
+        allUsers,
     },
     Mutation: {
         userCreate,

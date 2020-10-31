@@ -22,6 +22,11 @@ interface UpdateUserInput {
 
 export default class UserService {
 
+    static getAllUsers = async () => {
+        const users = await User.find();
+        return users;
+    }
+
     static getOneUserByEmail = async (userEmail: string) => {
         const user = await User.findOne({ email: userEmail });
         return user;

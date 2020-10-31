@@ -48,6 +48,7 @@ const authType = gql`
 
     type Query {
         profile: User!
+        allUsers: [User]!
     }
 `;
 
