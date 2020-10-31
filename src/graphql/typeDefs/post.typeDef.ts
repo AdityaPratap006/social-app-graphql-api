@@ -2,13 +2,16 @@ import { gql } from 'apollo-server-express';
 
 const postType = gql`
     type Post {
-        id: ID!
+        _id: ID!
         title: String!
         description: String!
+        createdBy: User!
+        createdAt: DateTime!
+        updatedAt: DateTime!
     }
 
     # input type
-    input PostInput {
+    input PostCreateInput {
         title: String!
         description: String!
     }
@@ -21,7 +24,7 @@ const postType = gql`
 
     # mutations 
     type Mutation {
-        newPost(input: PostInput!): Post!
+        postCreate(input: PostCreateInput!): Post!
     }
 `;
 
