@@ -32,6 +32,16 @@ const allPosts: IFieldResolver<any, RequestResponseObject, any, Promise<PostDoc[
 // -- mutations --
 
 const postCreate: IFieldResolver<any, RequestResponseObject, newPostArgs, Promise<PostDoc>> = async (parent, args, context) => {
+    const { title, description } = args.input;
+
+    if (!title.trim()) {
+        throw Error('Title is required');
+    }
+
+    if (!description.trim()) {
+        throw Error('Description is required');
+    }
+
     const userAuthRecord = await authCheck(context.req);
 
     if (!userAuthRecord) {
@@ -45,8 +55,8 @@ const postCreate: IFieldResolver<any, RequestResponseObject, newPostArgs, Promis
     }
 
     const createdPost = await PostService.createPost({
-        title: args.input.title,
-        description: args.input.description,
+        title: title,
+        description: description,
         createdBy: createdByUser._id,
     });
 

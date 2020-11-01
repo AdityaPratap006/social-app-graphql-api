@@ -27,8 +27,7 @@ const getUserDetails = async (uid: string) => {
         const currentUser = await firebaseAdmin.auth().getUser(uid);
         return currentUser;
     } catch (error) {
-        console.log(chalk.red('USER NOT FOUND: ', error));
-        throw Error(`User not found`);
+        throw error;
     }
 }
 
@@ -39,10 +38,6 @@ export const getVerifiedUser = async (authToken: string) => {
 
         return currentUser;
     } catch (error) {
-        console.log(chalk.red('AUTH CHECK ERROR', error));
-        if (error = `User not found`) {
-            throw Error(error);
-        }
         throw Error(`Invalid or expired token`);
     }
 }
