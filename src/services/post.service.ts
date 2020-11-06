@@ -14,6 +14,12 @@ export default class PostService {
         return posts;
     }
 
+    static async getPostCount() {
+        const postCount = await Post.find().estimatedDocumentCount().exec();
+
+        return postCount;
+    }
+
     static async createPost(postData: PostCreateInput) {
         const newPost = Post.build({
             title: postData.title,

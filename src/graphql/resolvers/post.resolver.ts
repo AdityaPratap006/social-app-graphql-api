@@ -29,6 +29,18 @@ const allPosts: IFieldResolver<any, RequestResponseObject, any, Promise<PostDoc[
     return posts;
 }
 
+const totalPosts: IFieldResolver<any, RequestResponseObject, any, Promise<number>> = async (parents, args, context) => {
+    const userAuthRecord = await authCheck(context.req);
+
+    if (!userAuthRecord) {
+        throw new AuthenticationError('Unauthorized');
+    }
+
+    const postCount = await PostService.getPostCount();
+
+    return postCount;
+}
+
 // -- mutations --
 
 const postCreate: IFieldResolver<any, RequestResponseObject, newPostArgs, Promise<PostDoc>> = async (parent, args, context) => {
@@ -68,6 +80,7 @@ const postResolver: IResolvers = {
     DateTime: DateTimeResolver,
     Query: {
         allPosts,
+        totalPosts,
     },
     Mutation: {
         postCreate,
