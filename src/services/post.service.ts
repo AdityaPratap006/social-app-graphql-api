@@ -9,7 +9,7 @@ interface PostCreateInput {
 
 export default class PostService {
     static async getAllPosts() {
-        const posts = await Post.find().populate('createdBy');
+        const posts = await Post.find({}, null, { sort: { createdAt: -1 } }).populate('createdBy');
 
         return posts;
     }
