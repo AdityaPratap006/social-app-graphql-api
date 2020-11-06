@@ -17,7 +17,7 @@ const postType = gql`
     }
 
     input AllPostsInput {
-        pageNumber: Int
+        skip: Int
     }
 
     # queries

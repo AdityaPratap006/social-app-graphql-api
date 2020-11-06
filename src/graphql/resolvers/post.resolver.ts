@@ -17,7 +17,7 @@ interface newPostArgs {
 
 interface allPostsArgs {
     input: {
-        pageNumber: number | undefined;
+        skip: number | undefined;
     }
 }
 
@@ -30,9 +30,9 @@ const allPosts: IFieldResolver<any, RequestResponseObject, allPostsArgs, Promise
         throw new AuthenticationError('Unauthorized');
     }
 
-    const currentPage = args.input.pageNumber || 1;
+    const skip = args.input.skip || 0;
 
-    const posts = await PostService.getAllPosts(currentPage);
+    const posts = await PostService.getAllPosts(skip);
 
     return posts;
 }
