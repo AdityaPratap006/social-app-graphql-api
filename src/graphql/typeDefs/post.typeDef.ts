@@ -16,10 +16,14 @@ const postType = gql`
         description: String!
     }
 
+    input AllPostsInput {
+        pageNumber: Int
+    }
+
     # queries
     type Query {
         totalPosts: Int!
-        allPosts: [Post!]!
+        allPosts(input: AllPostsInput!): [Post!]!
     }
 
     # mutations 

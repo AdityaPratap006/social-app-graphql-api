@@ -15,16 +15,24 @@ interface newPostArgs {
     };
 }
 
+interface allPostsArgs {
+    input: {
+        pageNumber: number | undefined;
+    }
+}
+
 // -- queries --
 
-const allPosts: IFieldResolver<any, RequestResponseObject, any, Promise<PostDoc[]>> = async (parents, args, context) => {
+const allPosts: IFieldResolver<any, RequestResponseObject, allPostsArgs, Promise<PostDoc[]>> = async (parents, args, context) => {
     const userAuthRecord = await authCheck(context.req);
 
     if (!userAuthRecord) {
         throw new AuthenticationError('Unauthorized');
     }
 
-    const posts = await PostService.getAllPosts();
+    const currentPage = args.input.pageNumber || 1;
+
+    const posts = await PostService.getAllPosts(currentPage);
 
     return posts;
 }

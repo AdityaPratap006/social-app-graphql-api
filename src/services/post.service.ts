@@ -8,8 +8,15 @@ interface PostCreateInput {
 }
 
 export default class PostService {
-    static async getAllPosts() {
-        const posts = await Post.find({}, null, { sort: { createdAt: -1 } }).populate('createdBy');
+    static async getAllPosts(currentPageNumber: number) {
+        const postsPerPage = 5;
+
+        const posts = await Post.find()
+            .skip((currentPageNumber - 1) * postsPerPage)
+            .limit(postsPerPage)
+            .sort({ createdAt: -1 })
+            .populate('createdBy');
+
 
         return posts;
     }
