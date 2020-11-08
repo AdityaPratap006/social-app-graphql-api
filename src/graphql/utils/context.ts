@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
+import { PubSub } from 'apollo-server-express';
 
-export interface RequestResponseObject {
-    res: Response;
+export interface ContextArgs {
     req: Request;
+    pubsub: PubSub;
 }
 
-export const contextFunction = (reqResObj: RequestResponseObject) => reqResObj;
+export const contextFunction = (args: ContextArgs) => args;

@@ -4,7 +4,7 @@ import { DateTimeResolver } from 'graphql-scalars';
 
 import { PostDoc } from '../../models/post';
 import { authCheck } from '../helpers/auth';
-import { RequestResponseObject } from '../utils/context';
+import { ContextArgs } from '../utils/context';
 import PostService from '../../services/post.service';
 import UserService from '../../services/user.service';
 
@@ -23,7 +23,7 @@ interface allPostsArgs {
 
 // -- queries --
 
-const allPosts: IFieldResolver<any, RequestResponseObject, allPostsArgs, Promise<PostDoc[]>> = async (parents, args, context) => {
+const allPosts: IFieldResolver<any, ContextArgs, allPostsArgs, Promise<PostDoc[]>> = async (parents, args, context) => {
     const userAuthRecord = await authCheck(context.req);
 
     if (!userAuthRecord) {
@@ -37,7 +37,7 @@ const allPosts: IFieldResolver<any, RequestResponseObject, allPostsArgs, Promise
     return posts;
 }
 
-const totalPosts: IFieldResolver<any, RequestResponseObject, any, Promise<number>> = async (parents, args, context) => {
+const totalPosts: IFieldResolver<any, ContextArgs, any, Promise<number>> = async (parents, args, context) => {
     const userAuthRecord = await authCheck(context.req);
 
     if (!userAuthRecord) {
@@ -51,7 +51,7 @@ const totalPosts: IFieldResolver<any, RequestResponseObject, any, Promise<number
 
 // -- mutations --
 
-const postCreate: IFieldResolver<any, RequestResponseObject, newPostArgs, Promise<PostDoc>> = async (parent, args, context) => {
+const postCreate: IFieldResolver<any, ContextArgs, newPostArgs, Promise<PostDoc>> = async (parent, args, context) => {
     const { title, description } = args.input;
 
     if (!title.trim()) {

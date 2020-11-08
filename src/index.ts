@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import { config as dotenvConfig } from 'dotenv';
 import chalk from 'chalk';
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer, PubSub } from 'apollo-server-express';
 import http from 'http';
 import { makeExecutableSchema } from 'graphql-tools';
 import { loadFilesSync } from '@graphql-tools/load-files';
@@ -13,6 +13,8 @@ import cors from 'cors';
 import { contextFunction } from './graphql/utils/context';
 
 dotenvConfig();
+
+const pubsub = new PubSub();
 
 const app: Express = express();
 
@@ -49,9 +51,10 @@ apolloServer.applyMiddleware({
 });
 
 // create a general HTTP server
-const PORT = process.env.PORT;
-
 const httpServer = http.createServer(app);
+
+// add subscription
+apolloServer.installSubscriptionHandlers(httpServer);
 
 // db
 const connectToDatabase = async () => {
@@ -69,6 +72,9 @@ const connectToDatabase = async () => {
     }
 }
 
+// listen to server
+const PORT = process.env.PORT;
+
 httpServer.listen(PORT, async () => {
 
     console.log(chalk.yellow('\n\nConnecting to DB\n'));
@@ -79,5 +85,8 @@ httpServer.listen(PORT, async () => {
     console.log(`\nServer is ready at ${chalk.blueBright(localURL)}`);
 
     const graphqlURL = `${localURL}${apolloServer.graphqlPath}`;
-    console.log(`GraphQL Server is ready at ${chalk.magentaBright(graphqlURL)}\n`);
+    console.log(`GraphQL Server is ready at ${chalk.magentaBright(graphqlURL)}`);
+
+    const subscriptionsURL = `${localURL}${apolloServer.subscriptionsPath}`;
+    console.log(`GraphQL Subscriptions ready at ${chalk.cyan(subscriptionsURL)}\n`);
 });
