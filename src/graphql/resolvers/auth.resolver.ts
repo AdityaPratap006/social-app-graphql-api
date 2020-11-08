@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { DateTimeResolver } from 'graphql-scalars';
 
 import { authCheck, getVerifiedUser } from '../helpers/auth';
-import { ContextArgs } from '../utils/context';
+import { ContextAttributes } from '../utils/context';
 import { UserDoc } from '../../models/user';
 import UserService from '../../services/user.service';
 
@@ -24,7 +24,7 @@ interface userUpdateArgs {
     };
 }
 
-const profile: IFieldResolver<any, ContextArgs, any, Promise<UserDoc>> = async (parent, args, context) => {
+const profile: IFieldResolver<any, ContextAttributes, any, Promise<UserDoc>> = async (parent, args, context) => {
     const currentUser = await authCheck(context.req);
 
     const user = await UserService.getOneUserByEmail(currentUser.email as string);
@@ -36,7 +36,7 @@ const profile: IFieldResolver<any, ContextArgs, any, Promise<UserDoc>> = async (
     return user;
 }
 
-const userCreate: IFieldResolver<any, ContextArgs, userCreateArgs, Promise<UserDoc>> = async (parent, args, { req }) => {
+const userCreate: IFieldResolver<any, ContextAttributes, userCreateArgs, Promise<UserDoc>> = async (parent, args, { req }) => {
     // console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     const currentUser = await getVerifiedUser(args.input.authToken);
@@ -55,7 +55,7 @@ const userCreate: IFieldResolver<any, ContextArgs, userCreateArgs, Promise<UserD
     return newUser;
 };
 
-const userUpdate: IFieldResolver<any, ContextArgs, userUpdateArgs, Promise<UserDoc | null>> = async (parent, args, { req }) => {
+const userUpdate: IFieldResolver<any, ContextAttributes, userUpdateArgs, Promise<UserDoc | null>> = async (parent, args, { req }) => {
     // console.log(chalk.blueBright("args: ", util.inspect(args, { showHidden: false, depth: null })));
 
     const currentUser = await authCheck(req);
@@ -67,7 +67,7 @@ const userUpdate: IFieldResolver<any, ContextArgs, userUpdateArgs, Promise<UserD
     return updatedUser;
 };
 
-const allUsers: IFieldResolver<any, ContextArgs, any, Promise<UserDoc[]>> = async (parents, args, ctx) => {
+const allUsers: IFieldResolver<any, ContextAttributes, any, Promise<UserDoc[]>> = async (parents, args, ctx) => {
     const users = await UserService.getAllUsers();
 
     return users;

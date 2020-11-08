@@ -4,9 +4,10 @@ import { DateTimeResolver } from 'graphql-scalars';
 
 import { PostDoc } from '../../models/post';
 import { authCheck } from '../helpers/auth';
-import { ContextArgs } from '../utils/context';
+import { ContextAttributes } from '../utils/context';
 import PostService from '../../services/post.service';
 import UserService from '../../services/user.service';
+import { SubscriptionEvent } from '../utils/subscriptionEvents';
 
 interface newPostArgs {
     input: {
@@ -23,7 +24,7 @@ interface allPostsArgs {
 
 // -- queries --
 
-const allPosts: IFieldResolver<any, ContextArgs, allPostsArgs, Promise<PostDoc[]>> = async (parents, args, context) => {
+const allPosts: IFieldResolver<any, ContextAttributes, allPostsArgs, Promise<PostDoc[]>> = async (parents, args, context) => {
     const userAuthRecord = await authCheck(context.req);
 
     if (!userAuthRecord) {
@@ -37,7 +38,7 @@ const allPosts: IFieldResolver<any, ContextArgs, allPostsArgs, Promise<PostDoc[]
     return posts;
 }
 
-const totalPosts: IFieldResolver<any, ContextArgs, any, Promise<number>> = async (parents, args, context) => {
+const totalPosts: IFieldResolver<any, ContextAttributes, any, Promise<number>> = async (parents, args, context) => {
     const userAuthRecord = await authCheck(context.req);
 
     if (!userAuthRecord) {
@@ -51,7 +52,7 @@ const totalPosts: IFieldResolver<any, ContextArgs, any, Promise<number>> = async
 
 // -- mutations --
 
-const postCreate: IFieldResolver<any, ContextArgs, newPostArgs, Promise<PostDoc>> = async (parent, args, context) => {
+const postCreate: IFieldResolver<any, ContextAttributes, newPostArgs, Promise<PostDoc>> = async (parent, args, context) => {
     const { title, description } = args.input;
 
     if (!title.trim()) {
@@ -80,7 +81,19 @@ const postCreate: IFieldResolver<any, ContextArgs, newPostArgs, Promise<PostDoc>
         createdBy: createdByUser._id,
     });
 
+    context.pubsub.publish(SubscriptionEvent.POST_ADDED, {
+        postAdded: createdPost,
+    });
+
     return createdPost;
+}
+
+// -- subscriptions --
+
+const onPostAddedSubscribe: IFieldResolver<any, ContextAttributes, any, AsyncIterator<PostDoc, any, undefined>> = (parent, args, context) => {
+    const { pubsub } = context;
+
+    return pubsub.asyncIterator<PostDoc>([SubscriptionEvent.POST_ADDED]);
 }
 
 // resolver
@@ -92,6 +105,11 @@ const postResolver: IResolvers = {
     },
     Mutation: {
         postCreate,
+    },
+    Subscription: {
+        onPostAdded: {
+            subscribe: onPostAddedSubscribe,
+        },
     }
 };
 

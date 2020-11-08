@@ -39,7 +39,7 @@ const schema: GraphQLSchema = makeExecutableSchema({
 // graphql server
 const apolloServer = new ApolloServer({
     schema: schema,
-    context: contextFunction,
+    context: contextFunction({ pubsub }),
 });
 
 // connect apollo graphql server to a specific HTTP famework i.e: express

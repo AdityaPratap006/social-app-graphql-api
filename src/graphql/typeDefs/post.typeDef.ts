@@ -30,6 +30,11 @@ const postType = gql`
     type Mutation {
         postCreate(input: PostCreateInput!): Post!
     }
+
+    # subscriptions
+    type Subscription {
+        onPostAdded: Post!
+    }
 `;
 
 export default postType;
