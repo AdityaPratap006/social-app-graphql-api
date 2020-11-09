@@ -33,7 +33,7 @@ const postType = gql`
 
     # subscriptions
     type Subscription {
-        onPostAdded: Post!
+        onPostAdded: Post
     }
 `;
 

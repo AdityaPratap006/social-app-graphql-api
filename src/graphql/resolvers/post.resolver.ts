@@ -82,7 +82,7 @@ const postCreate: IFieldResolver<any, ContextAttributes, newPostArgs, Promise<Po
     });
 
     context.pubsub.publish(SubscriptionEvent.POST_ADDED, {
-        postAdded: createdPost,
+        onPostAdded: createdPost,
     });
 
     return createdPost;
