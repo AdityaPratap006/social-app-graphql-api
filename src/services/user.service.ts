@@ -18,6 +18,7 @@ interface UpdateUserInput {
     username?: string;
     about?: string;
     imageBase64String?: string;
+    fcmToken?: string;
 }
 
 export default class UserService {
@@ -82,5 +83,25 @@ export default class UserService {
         }).exec();
 
         return updatedUser;
+    }
+
+    static saveFcmTokenForUser = async (userEmail: string, fcmToken: string) => {
+        try {
+            const updatedUser = await User.findOneAndUpdate({
+                email: userEmail
+            }, {
+                fcmToken,
+            }, {
+                new: true
+            }).exec();
+
+            if (!updatedUser) {
+                throw Error(`Token Not Saved: User with email ${userEmail} not found!`);
+            }
+
+            return updatedUser;
+        } catch (error) {
+            throw error;
+        }
     }
 }

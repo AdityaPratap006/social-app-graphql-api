@@ -7,6 +7,7 @@ export interface UserAttributes {
     username?: string;
     name?: string;
     about?: string;
+    fcmToken?: string;
 }
 
 // An interface that describes the properties
@@ -25,6 +26,7 @@ interface UserDoc extends mongoose.Document {
     about?: string;
     createdAt: string;
     updatedAt: string;
+    fcmToken?: string;
 }
 
 const userSchema = new mongoose.Schema({
@@ -53,6 +55,9 @@ const userSchema = new mongoose.Schema({
         ]
     },
     about: {
+        type: String,
+    },
+    fcmToken: {
         type: String,
     }
 }, { timestamps: true });
